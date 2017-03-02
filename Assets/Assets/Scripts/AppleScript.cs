@@ -29,7 +29,6 @@ public class AppleScript : MonoBehaviour {
 	public float[] zOffset;
 	
 	
-	
 	// Use this for initialization
 	void Start () {
 		myRotation = transform.rotation;
@@ -45,6 +44,7 @@ public class AppleScript : MonoBehaviour {
     
 	void OnTriggerEnter(Collider other) {
 		if (other.gameObject.name == "obj_target") {
+			
 			units = myController.GetComponent<AcceptInput>().CurrentlySelectedUnits;
 			for (int i = 0; i < units.Count; i++) {
 				if (numUnits < maxUnits && firstOpenIndex < maxUnits) {
@@ -97,7 +97,7 @@ public class AppleScript : MonoBehaviour {
 	public bool canBreakOff() {
 		int selectedCount = 0;
 		for (int i = 0; i < myUnits.Count; i++) {
-			if (myUnits[i].GetComponent<UnitAI>().selected == true) {
+			if (myUnits[i].GetComponent<UnitAI>().selected == true && myUnits[i].GetComponent<UnitAI>().holdingObject == true) {
 				selectedCount++;
 			}
 		}

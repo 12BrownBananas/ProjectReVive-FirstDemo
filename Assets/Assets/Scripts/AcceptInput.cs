@@ -22,6 +22,10 @@ public class AcceptInput : MonoBehaviour {
 
     private float navSpread = 1.5f;
 	
+	public int clickBufferSize;
+	private int clickBuffer = 0;
+	private bool doubleClick = false;
+	
 	private Camera myCam;
 
     public GameObject Target;
@@ -64,6 +68,9 @@ public class AcceptInput : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (clickBuffer > 0) {
+			clickBuffer--;
+		}
         //Remove any objects from currentlySelectedUnits that aren't selected
 
         //Cannot change list while looping through with 'foreach', so create a separate remove list
@@ -138,7 +145,10 @@ public class AcceptInput : MonoBehaviour {
             }
             else if (Input.GetMouseButtonDown(1))
             {
-
+				if (clickBuffer > 0) {
+					doubleClick = true;
+				}
+				clickBuffer = clickBufferSize;
                 float theta = Mathf.PI * 2 / CurrentlySelectedUnits.Count;
 
                 //Move each unit so that they are offset in a circle around the center point,
@@ -149,7 +159,7 @@ public class AcceptInput : MonoBehaviour {
                     NavMeshAgent nav = ArrayListUnit.GetComponent<NavMeshAgent>();
 					
 					if (ArrayListUnit.GetComponent<UnitAI>().holdingObject == true) {
-						if (ArrayListUnit.GetComponent<UnitAI>().getTargetObject().GetComponent<AppleScript>().canBreakOff()) {
+						if (ArrayListUnit.GetComponent<UnitAI>().getTargetObject().GetComponent<AppleScript>().canBreakOff() || doubleClick) {
 							sendUnitOnMerryWay(ArrayListUnit);
 							nav.SetDestination(mouseDownPoint);
 						}
@@ -172,7 +182,7 @@ public class AcceptInput : MonoBehaviour {
                         Vector3 offset = new Vector3(navSpread * Mathf.Cos(angle), 0.0f, navSpread * Mathf.Sin(angle));
 						
 						if (ArrayListUnit.GetComponent<UnitAI>().holdingObject == true) {
-							if (ArrayListUnit.GetComponent<UnitAI>().getTargetObject().GetComponent<AppleScript>().canBreakOff()) {
+							if (ArrayListUnit.GetComponent<UnitAI>().getTargetObject().GetComponent<AppleScript>().canBreakOff() || doubleClick) {
 								sendUnitOnMerryWay(ArrayListUnit);
 								nav.SetDestination(mouseDownPoint + offset);
 							}
@@ -204,6 +214,7 @@ public class AcceptInput : MonoBehaviour {
                 }
             }
         }
+		doubleClick = false;
 	}
 	
 	public void sendUnitOnMerryWay(GameObject unit) {
